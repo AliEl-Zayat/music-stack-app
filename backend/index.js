@@ -2,6 +2,8 @@ const express = require("express");
 const { createServer } = require("http");
 const { Server } = require("socket.io");
 const cors = require("cors");
+const { version } = require("./package.json");
+const API_VERSION = `v${version.split(".")[0]}`;
 
 const app = express();
 const server = createServer(app);
@@ -16,6 +18,12 @@ const io = new Server(server, {
 // middleware
 app.use(cors());
 app.use(express.json());
+app.use(function (req, res, next) {
+  setTimeout(next, 1000);
+});
+
+const downloadRoutes = require("./routes/download.route");
+app.use(`/api/${API_VERSION}/download`, downloadRoutes);
 
 // test route
 app.get("/", (req, res) => {
